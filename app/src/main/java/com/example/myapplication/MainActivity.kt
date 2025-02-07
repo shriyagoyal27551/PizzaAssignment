@@ -16,16 +16,33 @@ import com.example.myapplication.ui.theme.MyApplicationTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            MyApplicationTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
+
+        val pizzaMenu = PizzaMenu()
+        val inventory = Inventory()
+        val orderService = OrderService(pizzaMenu, inventory)
+
+        // Sample pizza order
+        val selectedPizzas = listOf(
+            pizzaMenu.pizzas[0].copy(
+                size = PizzaSize.REGULAR,
+                toppings = mutableListOf(pizzaMenu.toppings[0], pizzaMenu.toppings[1])
+            ),
+            pizzaMenu.pizzas[1].copy(
+                size = PizzaSize.MEDIUM,
+                toppings = mutableListOf(pizzaMenu.toppings[3])
+            )
+        )
+
+        // Sample side orders
+        val sideOrders = listOf(
+            "Cold Drink" to 55.0
+        )
+
+        try {
+            val totalAmount = orderService.createOrder(selectedPizzas, sideOrders)
+            println("Total order amount: Rs. $totalAmount")
+        } catch (e: Exception) {
+            println("Order Error: ${e.message}")
         }
     }
 }
